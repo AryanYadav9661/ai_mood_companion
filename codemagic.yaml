@@ -1,0 +1,19 @@
+workflows:
+  android-debug-apk:
+    name: Android Debug (APK)
+    environment:
+      flutter: stable
+      vars:
+        AI_PROVIDER: openai
+      groups:
+        - openai_credentials
+    scripts:
+      - name: Create .env from env vars
+        script: |
+          echo "AI_PROVIDER=$AI_PROVIDER" > .env
+          if [ -n "$OPENAI_API_KEY" ]; then echo "OPENAI_API_KEY=$OPENAI_API_KEY" >> .env; fi
+          if [ -n "$OPENAI_MODEL" ]; then echo "OPENAI_MODEL=$OPENAI_MODEL" >> .env; else echo "OPENAI_MODEL=gpt-4o-mini" >> .env; fi
+      - flutter packages get
+      - flutter build apk --debug
+    artifacts:
+      - build/app/outputs/flutter-apk/app-debug.apk
